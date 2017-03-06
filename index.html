@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello World!</title>
+<link rel= "stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">  
+<link rel= "stylesheet" href="bower_components/bootstrap-table/dist/bootstrap-table.min.css">
+
+<link rel= "stylesheet" href="bower_components/bootstrap-fileinput/css/fileinput.css">
+<script src="bower_components/jquery/dist/jquery-3.1.1.min.js"></script>
+
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/bootstrap-table/dist/bootstrap-table.js"></script>
+<script src="bower_components/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+<script src="bower_components/bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="bower_components/bootstrap-fileinput/js/locales/zh.js"></script>
+
+</head>
+  <body>
+<form name="input" action="">
+<input id="input-1a" type="file" class="file" data-show-preview="false">
+</form>
+<div class="table-responsive">
+
+<table id="xlsx-table" class="table table-bordered">
+</table>
+</div>
+    <h1>Hello World!</h1>
+    We are using node.js。
+    <div id="hi"></div>
+    <script>
+    $(document).ready(function(){
+    	$("form").submit(function(e){
+    		e.preventDefault();
+    		alert($("#input-1a").val());
+    		if(typeof require !== 'undefined') XLSX = require('xlsx');
+    	    var workbook = XLSX.readFile($("#input-1a").val());   
+    	    var first_sheet_name = workbook.SheetNames[0];
+    	    var max_rng = XLSX.utils.decode_range(workbook.Sheets[first_sheet_name]['!ref']);
+    	    var max_col = max_rng.e.c;
+    	    var max_row = max_rng.e.r;
+    	    var table_col_head = [];
+    	    var field_col_head = ['sq','user_id','sub_company','company','e_type','e_sub_type','source','status','current_process','operator','user_name','address','contact_name','contact_tel','contact_cellphone','contact_operator','contact_operator_tel','time_division','step_flag','payment','measure_type','reduction_type','original_vol','new_vol','total_vol','e_user_type','vol_level','vol_type','e_from_station','e_from_line','e_from_transform','e_from_sub_transform','apply_time','answer_time','design_time','design_answer_time','mid_time','mid_answer_time','done_time','done_answer_time','finish_time','new_interface','publicity_flag','overtime_flag','file_time','file_name','transfer_flag','design_company','construct_company','apply_check_time','district_flag','temp_flag'];
+    	    var roa = [];
+    	    var row_data={};
+
+
+    	    for (var i = 0 ; i <= max_row; i++){
+    	        for (var j = 0 ; j <= max_col; j++)
+    	        {
+    	        	
+    	        	if (i == 0){
+    	        		var col_head = workbook.Sheets[first_sheet_name][XLSX.utils.encode_cell({c:j, r:i})].v;
+    	    	    	workbook.Sheets[first_sheet_name][XLSX.utils.encode_cell({c:i, r:0})].v = field_col_head[i];		    	    	
+    	    	    	table_col_head.push({field:field_col_head[j],title:col_head});
+    	        	}
+    	        	else{
+    	        		row_data[field_col_head[j]] = workbook.Sheets[first_sheet_name][XLSX.utils.encode_cell({c:j, r:i})].v;  	    	    		
+    	        	}	    	    	
+    	        }
+    	        if (i > 0 ){
+    	        	roa.push(row_data);
+    	        	row_data={};
+    	        }
+    	    }
+    	    //var roa = XLSX.utils.sheet_to_json(workbook.Sheets[first_sheet_name]);
+    	    
+    	    //第一行读取属性
+    	    //workbook.Sheets[first_sheet_name][address_of_cell].v));
+    	    $('#xlsx-table').bootstrapTable({
+    	        columns:table_col_head ,
+    	        data: roa
+    	    }); 
+    	    
+    	    $('#xlsx-table').bootstrapTable('hideColumn', 'e_from_sub_transform');
+    	    
+    	});	
+    });
+    
+</script>.
+ 
+  </body>
+</html>
